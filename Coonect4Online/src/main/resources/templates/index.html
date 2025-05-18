@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect 4 - Welcome</title>
+    <style>
+        /* Base Styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1f1c2c, #928DAB);
+            color: #f0f0f0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 1s ease-in;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 960px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .welcome-container {
+            text-align: center;
+        }
+
+        .game-title {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #00F260, #0575E6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .game-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #ccc;
+        }
+
+        .game-info, .game-rules {
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .game-info p {
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .difficulty-selection h3 {
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            color: #00ffc8;
+        }
+
+        .difficulty-options {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .difficulty-option {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .difficulty-option:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+
+        input[type="radio"] {
+            margin-right: 10px;
+            transform: scale(1.3);
+        }
+
+        .difficulty-description {
+            margin-top: 8px;
+            font-size: 0.95rem;
+            color: #ddd;
+        }
+
+        .start-button {
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 30px;
+            background: linear-gradient(to right, #fc5c7d, #6a82fb);
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .start-button:hover {
+            background: linear-gradient(to right, #ff758c, #6a82fb);
+            transform: scale(1.05);
+        }
+
+        .game-rules h3 {
+            color: #ffdd57;
+        }
+
+        .game-rules ul {
+            list-style: disc;
+            padding-left: 20px;
+        }
+
+        .game-rules li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .game-title {
+                font-size: 2.2rem;
+            }
+
+            .game-subtitle {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="welcome-container">
+        <h1 class="game-title">Connect 4</h1>
+        <h2 class="game-subtitle">Play against AI using Minimax Algorithm</h2>
+
+        <div class="game-info">
+            <p>Connect Four is a two-player connection game in which players take turns dropping colored discs into a grid. The objective is to be the first to form a horizontal, vertical, or diagonal line of four of one's own discs.</p>
+            <p>In this version, you play against an AI that uses the Minimax algorithm with Alpha-Beta pruning to make intelligent decisions.</p>
+        </div>
+
+        <div class="difficulty-selection">
+            <h3>Select Difficulty Level</h3>
+            <form th:action="@{/game/new}" method="post">
+                <div class="difficulty-option" th:each="level : ${difficultyLevels}">
+                    <input type="radio" name="difficulty"
+                           th:id="'difficulty-' + ${level.key}"
+                           th:value="${level.key == 'Easy' ? 3 :
+                     (level.key == 'Medium' ? 4 :
+                     (level.key == 'Hard' ? 5 : 6))}"
+                           th:checked="${level.key == 'Medium'}">
+                    <label th:for="'difficulty-' + ${level.key}" th:text="${level.key}"></label>
+                    <div class="difficulty-description">
+                        <span th:if="${level.key == 'Easy'}">The AI searches 3 moves ahead - good for beginners.</span>
+                        <span th:if="${level.key == 'Medium'}">The AI searches 4 moves ahead - balanced difficulty.</span>
+                        <span th:if="${level.key == 'Hard'}">The AI searches 5 moves ahead - challenging gameplay.</span>
+                        <span th:if="${level.key == 'Expert'}">The AI searches 6 moves ahead - very difficult to beat!</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="start-button">Start Game</button>
+            </form>
+        </div>
+
+        <div class="game-rules">
+            <h3>Game Rules</h3>
+            <ul>
+                <li>Players take turns dropping colored discs into the grid</li>
+                <li>The disc falls to the lowest available position in the column</li>
+                <li>The first player to connect 4 discs horizontally, vertically, or diagonally wins</li>
+                <li>If the grid fills up with no winner, the game ends in a draw</li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>

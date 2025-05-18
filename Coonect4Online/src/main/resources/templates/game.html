@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Connect 4 Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    /* Connect 4 Game Styles */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .game-container {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      padding: 30px;
+      text-align: center;
+      max-width: 700px;
+      width: 100%;
+      animation: fadeIn 0.6s ease-in-out;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: #2c3e50;
+      margin-bottom: 10px;
+    }
+
+    .game-status {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin: 15px 0;
+      padding: 12px;
+      background-color: #ecf0f1;
+      border-left: 5px solid #3498db;
+      border-radius: 8px;
+    }
+
+    .game-board {
+      margin: 20px 0;
+    }
+
+    .column-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-bottom: 8px;
+}
+
+.column-buttons button {
+  width: 60px; /* same as .board-cell width */
+  height: 40px;
+  background-color: #8e44ad; /* purple tone */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+   .column-buttons button:hover:not([disabled]) {
+  background-color: #732d91;
+  transform: translateY(-2px);
+}
+
+.column-buttons button[disabled] {
+  background-color: #dcdde1;
+  cursor: not-allowed;
+}
+    .board-grid {
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(to bottom right, #6dd5ed, #2193b0); /* Nice blue gradient */
+  padding: 10px;
+  border-radius: 12px;
+  gap: 6px;
+}
+
+    .board-row {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+    }
+
+
+.board-cell {
+  width: 60px;
+  height: 60px;
+  background-color: transparent;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+}
+
+
+    .empty-cell, .player-piece, .ai-piece {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      animation: drop 0.5s ease;
+    }
+
+    .empty-cell {
+  background-color: #ecf0f1;
+}
+    .player-piece {
+  background: radial-gradient(circle at 30% 30%, #f9ca24, #f39c12); /* Yellow */
+}
+
+.ai-piece {
+  background: radial-gradient(circle at 30% 30%, #ff7675, #d63031); /* Red */
+}
+
+    .game-controls {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .game-controls button {
+      padding: 10px 20px;
+      background-color: #2ecc71;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.3s ease;
+    }
+
+    .game-controls button:hover {
+      background-color: #27ae60;
+    }
+
+    .game-controls select {
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      background-color: #ecf0f1;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #8e44ad;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: background-color 0.3s ease;
+    }
+
+    .button:hover {
+      background-color: #6c3483;
+    }
+
+    @keyframes drop {
+      from { transform: translateY(-100px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @media (max-width: 600px) {
+      .board-cell {
+        width: 40px;
+        height: 40px;
+      }
+
+      .empty-cell, .player-piece, .ai-piece {
+        width: 30px;
+        height: 30px;
+      }
+
+      .column-buttons button {
+        width: 30px;
+        height: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="game-container">
+  <h1>Connect 4</h1>
+
+  <div class="game-status" th:text="${game.status == T(com.game.connect4.model.GameStatus).IN_PROGRESS ?
+                                          (game.currentPlayer == T(com.game.connect4.model.Player).PLAYER ? 'Your Turn' : 'AI Thinking...') :
+                                          (game.status == T(com.game.connect4.model.GameStatus).PLAYER_WIN ? 'You Won!' :
+                                          (game.status == T(com.game.connect4.model.GameStatus).AI_WIN ? 'AI Won!' : 'Draw!'))}">
+  </div>
+
+  <div class="game-board">
+    <!-- Column selection buttons -->
+    <div class="column-buttons">
+      <button th:each="col : ${#numbers.sequence(0, 6)}"
+              th:attr="data-col=${col}"
+              th:disabled="${game.status != T(com.game.connect4.model.GameStatus).IN_PROGRESS ||
+                                    game.currentPlayer != T(com.game.connect4.model.Player).PLAYER}"
+              onclick="makeMove(this.getAttribute('data-col'))">↓</button>
+    </div>
+
+    <!-- Game board grid -->
+    <div class="board-grid">
+      <div th:each="rowIndex : ${#numbers.sequence(0, 5)}" class="board-row">
+        <div th:each="colIndex : ${#numbers.sequence(0, 6)}"
+             class="board-cell"
+             th:attr="data-row=${rowIndex}, data-col=${colIndex}">
+          <div th:class="${game.board.getCell(rowIndex, colIndex) == T(com.game.connect4.model.Player).PLAYER ? 'player-piece' :
+                                       (game.board.getCell(rowIndex, colIndex) == T(com.game.connect4.model.Player).AI ? 'ai-piece' : 'empty-cell')}">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="game-controls">
+    <button onclick="resetGame()">New Game</button>
+    <select id="difficulty" onchange="changeDifficulty()">
+      <option value="3" th:selected="${game.difficultyLevel == 3}">Easy</option>
+      <option value="4" th:selected="${game.difficultyLevel == 4}">Medium</option>
+      <option value="5" th:selected="${game.difficultyLevel == 5}">Hard</option>
+      <option value="6" th:selected="${game.difficultyLevel == 6}">Expert</option>
+    </select>
+    <div th:if="${game.status != T(com.game.connect4.model.GameStatus).IN_PROGRESS}">
+      <a th:href="@{'/game/' + ${gameId} + '/analysis'}" class="button">View Analysis</a>
+    </div>
+  </div>
+</div>
+
+<script th:src="@{/static/js/game.js}"></script>
+</body>
+</html>

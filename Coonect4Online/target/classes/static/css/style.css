@@ -1,0 +1,164 @@
+/* Connect 4 Game Styles */
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
+
+.game-container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+    max-width: 600px;
+    width: 100%;
+}
+
+h1 {
+    color: #2c3e50;
+    margin-top: 0;
+}
+
+.game-status {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 15px 0;
+    padding: 10px;
+    background-color: #eee;
+    border-radius: 4px;
+}
+
+.game-board {
+    margin: 20px 0;
+}
+
+.column-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.column-buttons button {
+    width: 40px;
+    height: 30px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.column-buttons button:hover:not([disabled]) {
+    background-color: #2980b9;
+}
+
+.column-buttons button[disabled] {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+}
+
+.board-grid {
+    display: flex;
+    flex-direction: column;
+    background-color: #3498db;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.board-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.board-cell {
+    width: 60px;
+    height: 60px;
+    background-color: #2980b9;
+    border-radius: 50%;
+    margin: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.empty-cell, .player-piece, .ai-piece {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.empty-cell {
+    background-color: white;
+}
+
+.player-piece {
+    background-color: red;
+    border-radius: 50%;
+}
+
+.ai-piece {
+    background-color: blue;
+    border-radius: 50%;
+}
+
+@keyframes drop {
+    0% {
+        transform: translateY(-300px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+.game-controls {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.game-controls button {
+    padding: 10px 20px;
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.game-controls button:hover {
+    background-color: #27ae60;
+}
+
+.game-controls select {
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    font-size: 1rem;
+}
+
+/* Responsive styling */
+@media (max-width: 600px) {
+    .board-cell {
+        width: 40px;
+        height: 40px;
+    }
+
+    .empty-cell, .player-piece, .ai-piece {
+        width: 30px;
+        height: 30px;
+    }
+
+    .column-buttons button {
+        width: 30px;
+    }
+}
