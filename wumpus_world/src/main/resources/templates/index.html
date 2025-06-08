@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wumpus World AI Agent</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .game-container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .world-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .world-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 2px;
+            background: #333;
+            border-radius: 10px;
+            padding: 10px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .cell {
+            aspect-ratio: 1;
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .cell:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .cell.visited {
+            background: #e8f5e8;
+            border-color: #4CAF50;
+        }
+
+        .cell.agent {
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            color: white;
+            font-weight: bold;
+            border: 3px solid #fff;
+            box-shadow: 0 0 15px rgba(33, 150, 243, 0.6);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 15px rgba(33, 150, 243, 0.6); }
+            50% { box-shadow: 0 0 25px rgba(33, 150, 243, 0.9); }
+            100% { box-shadow: 0 0 15px rgba(33, 150, 243, 0.6); }
+        }
+
+        .cell.wumpus {
+            background: #8B0000;
+            color: #FFD700;
+        }
+
+        .cell.pit {
+            background: #2F2F2F;
+            color: #FF6B6B;
+        }
+
+        .cell.gold {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #8B4513;
+            font-weight: bold;
+        }
+
+        .cell.stench {
+            background: linear-gradient(135deg, #FFA07A, #FA8072);
+        }
+
+        .cell.breeze {
+            background: linear-gradient(135deg, #87CEEB, #4682B4);
+        }
+
+        .cell.glitter {
+            background: linear-gradient(45deg, #FFD700, #FFFF00);
+            animation: sparkle 1s infinite alternate;
+        }
+
+        @keyframes sparkle {
+            0% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .panel h3 {
+            margin-bottom: 15px;
+            color: #FFD700;
+            font-size: 1.3rem;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn.primary {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+        }
+
+        .btn.secondary {
+            background: linear-gradient(45deg, #FF9800, #F57C00);
+        }
+
+        .btn.danger {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+        }
+
+        .status {
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .status .label {
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        .thoughts {
+            max-height: 200px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .thought {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .thought:last-child {
+            border-bottom: none;
+        }
+
+        .knowledge-base {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .kb-section {
+            margin-bottom: 15px;
+        }
+
+        .kb-section h4 {
+            color: #FFA500;
+            margin-bottom: 5px;
+        }
+
+        .kb-facts, .kb-rules {
+            font-size: 0.8rem;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        .kb-facts div, .kb-rules div {
+            padding: 2px 0;
+            opacity: 0.9;
+        }
+
+        .score-display {
+            font-size: 1.5rem;
+            text-align: center;
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .message-display {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auto-play-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .speed-control {
+            flex: 1;
+        }
+
+        .speed-control input {
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .world-grid {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🏴‍☠️ Wumpus World AI Agent 🧠</h1>
+        <p>Watch the AI agent navigate through logical reasoning and inference</p>
+    </div>
+
+    <div class="message-display" id="messageDisplay">
+        Welcome to Wumpus World! Click "New Game" to start.
+    </div>
+
+    <div class="game-container">
+        <div class="world-container">
+            <div class="world-grid" id="worldGrid">
+                <!-- Grid cells will be generated by JavaScript -->
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(45deg, #2196F3, #21CBF3);"></div>
+                    <span>Agent</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #8B0000;"></div>
+                    <span>Wumpus</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #2F2F2F;"></div>
+                    <span>Pit</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(45deg, #FFD700, #FFA500);"></div>
+                    <span>Gold</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, #FFA07A, #FA8072);"></div>
+                    <span>Stench</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, #87CEEB, #4682B4);"></div>
+                    <span>Breeze</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #e8f5e8;"></div>
+                    <span>Visited</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(45deg, #FFD700, #FFFF00);"></div>
+                    <span>Glitter</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="side-panel">
+            <div class="panel">
+                <h3>🎮 Game Controls</h3>
+                <div class="controls">
+                    <button class="btn primary" onclick="newGame('random')">🎲 New Random Game</button>
+                    <button class="btn secondary" onclick="newGame('predefined')">📋 Load Sample World</button>
+                    <button class="btn" onclick="stepAgent()">👣 Single Step</button>
+                    <div class="auto-play-controls">
+                        <button class="btn" onclick="toggleAutoPlay()" id="autoPlayBtn">▶️ Auto Play</button>
+                        <button class="btn danger" onclick="stopGame()">⏹️ Stop</button>
+                    </div>
+                    <div class="speed-control">
+                        <label>Speed: <span id="speedLabel">1000ms</span></label>
+                        <input type="range" id="speedRange" min="100" max="2000" value="1000"
+                               oninput="updateSpeed(this.value)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>📊 Agent Status</h3>
+                <div class="status" id="agentStatus">
+                    <div><span class="label">Position:</span> <span id="agentPos">(0,0)</span></div>
+                    <div><span class="label">Direction:</span> <span id="agentDir">EAST</span></div>
+                    <div><span class="label">Has Gold:</span> <span id="hasGold">No</span></div>
+                    <div><span class="label">Has Arrow:</span> <span id="hasArrow">Yes</span></div>
+                    <div class="score-display">Score: <span id="gameScore">0</span></div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>🧠 AI Thoughts</h3>
+                <div class="thoughts" id="thoughtsDisplay">
+                    <div class="thought">AI agent initialized and ready...</div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>📚 Knowledge Base</h3>
+                <div class="knowledge-base">
+                    <div class="kb-section">
+                        <h4>Facts</h4>
+                        <div class="kb-facts" id="kbFacts">
+                            <div>Loading...</div>
+                        </div>
+                    </div>
+                    <div class="kb-section">
+                        <h4>Rules</h4>
+                        <div class="kb-rules" id="kbRules">
+                            <div>Loading...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let gameState = null;
+    let autoPlayInterval = null;
+    let autoPlaySpeed = 1000;
+    let isAutoPlaying = false;
+
+    // Initialize the game grid
+    function initializeGrid() {
+        const grid = document.getElementById('worldGrid');
+        grid.innerHTML = '';
+
+        for (let i = 0; i < 100; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.id = `cell-${i}`;
+            cell.setAttribute('data-x', i % 10);
+            cell.setAttribute('data-y', Math.floor(i / 10));
+            grid.appendChild(cell);
+        }
+    }
+
+    // Update the visual display
+    function updateDisplay(state) {
+        gameState = state;
+
+        // Update message
+        document.getElementById('messageDisplay').textContent = state.message || 'Game in progress...';
+
+        // Update agent status
+        const agent = state.agent;
+        document.getElementById('agentPos').textContent = `(${agent.position.x},${agent.position.y})`;
+        document.getElementById('agentDir').textContent = agent.direction;
+        document.getElementById('hasGold').textContent = agent.hasGold ? 'Yes' : 'No';
+        document.getElementById('hasArrow').textContent = agent.hasArrow ? 'Yes' : 'No';
+        document.getElementById('gameScore').textContent = state.score;
+
+        // Clear all cells
+        for (let i = 0; i < 100; i++) {
+            const cell = document.getElementById(`cell-${i}`);
+            if (cell) {
+                cell.className = 'cell';
+                cell.textContent = '';
+            }
+        }
+
+        // Update world cells
+        state.world.forEach((row, y) => {
+            row.forEach((cell, x) => {
+                const cellId = `cell-${y * 10 + x}`;
+                const cellElement = document.getElementById(cellId);
+                if (!cellElement) return;
+
+                let classes = ['cell'];
+                let content = '';
+
+                // Agent position
+                if (agent.position.x === x && agent.position.y === y) {
+                    classes.push('agent');
+                    content = '🤖';
+                }
+
+                // World contents
+                if (cell.hasWumpus) {
+                    classes.push('wumpus');
+                    content = '👹';
+                }
+                if (cell.hasPit) {
+                    classes.push('pit');
+                    content = '🕳️';
+                }
+                if (cell.hasGold) {
+                    classes.push('gold');
+                    content = '💰';
+                }
+
+                // Perceptions
+                if (cell.hasStench) {
+                    classes.push('stench');
+                    if (!content) content = '💨';
+                }
+                if (cell.hasBreeze) {
+                    classes.push('breeze');
+                    if (!content) content = '🌪️';
+                }
+                if (cell.hasGlitter) {
+                    classes.push('glitter');
+                    if (!content) content = '✨';
+                }
+
+                // Visited cells
+                if (state.visitedCells && state.visitedCells.some(pos => pos.x === x && pos.y === y)) {
+                    classes.push('visited');
+                }
+
+                cellElement.className = classes.join(' ');
+                cellElement.textContent = content;
+            });
+        });
+
+        // Update AI thoughts
+        if (state.thoughts && state.thoughts.length > 0) {
+            const thoughtsDiv = document.getElementById('thoughtsDisplay');
+            thoughtsDiv.innerHTML = '';
+            state.thoughts.slice(-10).forEach(thought => {
+                const thoughtElement = document.createElement('div');
+                thoughtElement.className = 'thought';
+                thoughtElement.textContent = thought;
+                thoughtsDiv.appendChild(thoughtElement);
+            });
+            thoughtsDiv.scrollTop = thoughtsDiv.scrollHeight;
+        }
+
+        // Update knowledge base
+        updateKnowledgeBase(state.knowledgeBase);
+    }
+
+    // Update knowledge base display
+    function updateKnowledgeBase(kb) {
+        if (!kb) return;
+
+        const factsDiv = document.getElementById('kbFacts');
+        const rulesDiv = document.getElementById('kbRules');
+
+        factsDiv.innerHTML = '';
+        rulesDiv.innerHTML = '';
+
+        if (kb.facts && kb.facts.length > 0) {
+            kb.facts.forEach(fact => {
+                const factElement = document.createElement('div');
+                factElement.textContent = fact;
+                factsDiv.appendChild(factElement);
+            });
+        } else {
+            factsDiv.innerHTML = '<div>No facts yet...</div>';
+        }
+
+        if (kb.rules && kb.rules.length > 0) {
+            kb.rules.forEach(rule => {
+                const ruleElement = document.createElement('div');
+                ruleElement.textContent = rule;
+                rulesDiv.appendChild(ruleElement);
+            });
+        } else {
+            rulesDiv.innerHTML = '<div>No rules yet...</div>';
+        }
+    }
+
+    // Create a new game
+    function newGame(type) {
+        stopGame();
+
+        const world = type === 'predefined' ? createPredefinedWorld() : createRandomWorld();
+        gameState = {
+            world: world,
+            agent: {
+                position: { x: 0, y: 0 },
+                direction: 'EAST',
+                hasGold: false,
+                hasArrow: true,
+                alive: true
+            },
+            score: 0,
+            gameOver: false,
+            visitedCells: [{ x: 0, y: 0 }],
+            thoughts: ['Game started! Starting at position (0,0)', 'Analyzing current perceptions...'],
+            knowledgeBase: {
+                facts: ['At(0,0)', 'FacingEast', 'HasArrow'],
+                rules: [
+                    'Stench → Wumpus adjacent',
+                    'Breeze → Pit adjacent',
+                    'Glitter → Gold here',
+                    'Safe cells have no breeze or stench'
+                ]
+            },
+            message: 'New game started! Agent is ready to explore.'
+        };
+
+        updateDisplay(gameState);
+    }
+
+    // Create a predefined test world
+    function createPredefinedWorld() {
+        const world = [];
+        for (let y = 0; y < 10; y++) {
+            const row = [];
+            for (let x = 0; x < 10; x++) {
+                row.push({
+                    hasWumpus: false,
+                    hasPit: false,
+                    hasGold: false,
+                    hasStench: false,
+                    hasBreeze: false,
+                    hasGlitter: false
+                });
+            }
+            world.push(row);
+        }
+
+        // Place Wumpus at (3,2)
+        world[2][3].hasWumpus = true;
+
+        // Place pits
+        world[2][2].hasPit = true;
+        world[4][4].hasPit = true;
+        world[1][5].hasPit = true;
+
+        // Place gold at (7,6)
+        world[6][7].hasGold = true;
+        world[6][7].hasGlitter = true;
+
+        // Add perceptions
+        addPerceptions(world);
+
+        return world;
+    }
+
+    // Create a random world
+    function createRandomWorld() {
+        const world = [];
+        for (let y = 0; y < 10; y++) {
+            const row = [];
+            for (let x = 0; x < 10; x++) {
+                row.push({
+                    hasWumpus: false,
+                    hasPit: false,
+                    hasGold: false,
+                    hasStench: false,
+                    hasBreeze: false,
+                    hasGlitter: false
+                });
+            }
+            world.push(row);
+        }
+
+        // Place one Wumpus randomly (not at starting position)
+        let wumpusPlaced = false;
+        while (!wumpusPlaced) {
+            const x = Math.floor(Math.random() * 10);
+            const y = Math.floor(Math.random() * 10);
+            if (!(x === 0 && y === 0)) {
+                world[y][x].hasWumpus = true;
+                wumpusPlaced = true;
+            }
+        }
+
+        // Place 8-12 pits randomly
+        const numPits = 8 + Math.floor(Math.random() * 5);
+        let pitsPlaced = 0;
+        while (pitsPlaced < numPits) {
+            const x = Math.floor(Math.random() * 10);
+            const y = Math.floor(Math.random() * 10);
+            if (!(x === 0 && y === 0) && !world[y][x].hasPit && !world[y][x].hasWumpus) {
+                world[y][x].hasPit = true;
+                pitsPlaced++;
+            }
+        }
+
+        // Place gold randomly
+        let goldPlaced = false;
+        while (!goldPlaced) {
+            const x = Math.floor(Math.random() * 10);
+            const y = Math.floor(Math.random() * 10);
+            if (!world[y][x].hasWumpus && !world[y][x].hasPit) {
+                world[y][x].hasGold = true;
+                world[y][x].hasGlitter = true;
+                goldPlaced = true;
+            }
+        }
+
+        // Add perceptions
+        addPerceptions(world);
+
+        return world;
+    }
+
+    // Add perceptions (stench, breeze) to the world
+    function addPerceptions(world) {
+        for (let y = 0; y < 10; y++) {
+            for (let x = 0; x < 10; x++) {
+                // Check for stench (adjacent to Wumpus)
+                const adjacent = getAdjacentCells(x, y);
+                for (const adj of adjacent) {
+                    if (world[adj.y][adj.x].hasWumpus) {
+                        world[y][x].hasStench = true;
+                    }
+                    if (world[adj.y][adj.x].hasPit) {
+                        world[y][x].hasBreeze = true;
+                    }
+                }
+            }
+        }
+    }
+
+    // Get adjacent cells (north, south, east, west)
+    function getAdjacentCells(x, y) {
+        const adjacent = [];
+        const directions = [
+            { dx: 0, dy: -1 }, // North
+            { dx: 0, dy: 1 },  // South
+            { dx: 1, dy: 0 },  // East
+            { dx: -1, dy: 0 }  // West
+        ];
+
+        for (const dir of directions) {
+            const newX = x + dir.dx;
+            const newY = y + dir.dy;
+            if (newX >= 0 && newX < 10 && newY >= 0 && newY < 10) {
+                adjacent.push({ x: newX, y: newY });
+            }
+        }
+
+        return adjacent;
+    }
+
+    // Execute one step of the AI agent
+    function stepAgent() {
+        if (!gameState || gameState.gameOver || !gameState.agent.alive) {
+            return;
+        }
+
+        const action = decideAction(gameState);
+        gameState = executeAction(gameState, action);
+        updateDisplay(gameState);
+
+        if (gameState.gameOver) {
+            stopGame();
+        }
+    }
+
+    // AI decision making
+    function decideAction(state) {
+        const agent = state.agent;
+        const currentCell = state.world[agent.position.y][agent.position.x];
+
+        // Add thoughts
+        state.thoughts.push(`Thinking at position (${agent.position.x},${agent.position.y})`);
+
+        // If gold is here, grab it
+        if (currentCell.hasGold && !agent.hasGold) {
+            state.thoughts.push('Gold detected! Grabbing it.');
+            return { type: 'GRAB' };
+        }
+
+        // If we have gold, try to return to start
+        if (agent.hasGold) {
+            if (agent.position.x === 0 && agent.position.y === 0) {
+                state.thoughts.push('Back at start with gold! Climbing out.');
+                return { type: 'CLIMB' };
+            } else {
+                state.thoughts.push('Have gold, returning to start...');
+                return findPathToStart(state);
+            }
+        }
+
+        // Explore safe adjacent cells
+        const safeCells = findSafeCells(state);
+        const unvisitedSafeCells = safeCells.filter(cell =>
+            !state.visitedCells.some(visited => visited.x === cell.x && visited.y === cell.y)
+        );
+
+        if (unvisitedSafeCells.length > 0) {
+            const target = unvisitedSafeCells[0];
+            state.thoughts.push(`Moving to safe unvisited cell (${target.x},${target.y})`);
+            return moveTowardsTarget(state, target);
+        }
+
+        // If no safe unvisited cells, explore randomly
+        const adjacentCells = getAdjacentCells(agent.position.x, agent.position.y);
+        const validMoves = adjacentCells.filter(cell =>
+            !state.world[cell.y][cell.x].hasPit && !state.world[cell.y][cell.x].hasWumpus
+        );
+
+        if (validMoves.length > 0) {
+            const target = validMoves[Math.floor(Math.random() * validMoves.length)];
+            state.thoughts.push(`Exploring randomly to (${target.x},${target.y})`);
+            return moveTowardsTarget(state, target);
+        }
+
+        // No good moves, turn randomly
+        state.thoughts.push('No good moves, turning...');
+        return { type: 'TURN_LEFT' };
+    }
+
+    // Find safe cells based on knowledge
+    function findSafeCells(state) {
+        const safeCells = [];
+        const agent = state.agent;
+
+        for (let y = 0; y < 10; y++) {
+            for (let x = 0; x < 10; x++) {
+                const cell = state.world[y][x];
+                // A cell is safe if it has no breeze and no stench, or if we've visited it
+                if ((!cell.hasBreeze && !cell.hasStench) ||
+                    state.visitedCells.some(visited => visited.x === x && visited.y === y)) {
+                    safeCells.push({ x, y });
+                }
+            }
+        }
+
+        return safeCells;
+    }
+
+    // Move towards a target position
+    function moveTowardsTarget(state, target) {
+        const agent = state.agent;
+        const dx = target.x - agent.position.x;
+        const dy = target.y - agent.position.y;
+
+        // Determine required direction
+        let targetDirection;
+        if (dx > 0) targetDirection = 'EAST';
+        else if (dx < 0) targetDirection = 'WEST';
+        else if (dy > 0) targetDirection = 'SOUTH';
+        else if (dy < 0) targetDirection = 'NORTH';
+
+        // Turn to face the target direction
+        if (agent.direction !== targetDirection) {
+            return { type: 'TURN_LEFT' }; // Simplified turning
+        }
+
+        // Move forward
+        return { type: 'MOVE_FORWARD' };
+    }
+
+    // Find path back to start
+    function findPathToStart(state) {
+        const agent = state.agent;
+        const target = { x: 0, y: 0 };
+        return moveTowardsTarget(state, target);
+    }
+
+    // Execute an action and return new state
+    function executeAction(state, action) {
+        const newState = JSON.parse(JSON.stringify(state)); // Deep copy
+        const agent = newState.agent;
+
+        newState.score -= 1; // Each action costs 1 point
+
+        switch (action.type) {
+            case 'MOVE_FORWARD':
+                const newPos = getNewPosition(agent.position, agent.direction);
+                if (isValidPosition(newPos)) {
+                    agent.position = newPos;
+
+                    // Add to visited cells
+                    if (!newState.visitedCells.some(pos => pos.x === newPos.x && pos.y === newPos.y)) {
+                        newState.visitedCells.push({ x: newPos.x, y: newPos.y });
+                    }
+
+                    const currentCell = newState.world[newPos.y][newPos.x];
+
+                    // Check for dangers
+                    if (currentCell.hasWumpus) {
+                        newState.thoughts.push('💀 Walked into Wumpus! Game Over!');
+                        newState.message = 'Game Over! Agent was eaten by the Wumpus!';
+                        newState.score -= 1000;
+                        newState.gameOver = true;
+                        agent.alive = false;
+                    } else if (currentCell.hasPit) {
+                        newState.thoughts.push('💀 Fell into pit! Game Over!');
+                        newState.message = 'Game Over! Agent fell into a pit!';
+                        newState.score -= 1000;
+                        newState.gameOver = true;
+                        agent.alive = false;
+                    } else {
+                        newState.thoughts.push(`Moved to (${newPos.x},${newPos.y})`);
+
+                        // Report perceptions
+                        const perceptions = [];
+                        if (currentCell.hasStench) perceptions.push('stench');
+                        if (currentCell.hasBreeze) perceptions.push('breeze');
+                        if (currentCell.hasGlitter) perceptions.push('glitter');
+
+                        if (perceptions.length > 0) {
+                            newState.thoughts.push(`Perceptions: ${perceptions.join(', ')}`);
+                        } else {
+                            newState.thoughts.push('No perceptions - this cell seems safe');
+                        }
+
+                        // Update knowledge base
+                        updateAgentKnowledge(newState, newPos, currentCell);
+                    }
+                } else {
+                    newState.thoughts.push('Cannot move forward - wall detected');
+                }
+                break;
+
+            case 'TURN_LEFT':
+                agent.direction = turnLeft(agent.direction);
+                newState.thoughts.push(`Turned left, now facing ${agent.direction}`);
+                break;
+
+            case 'GRAB':
+                const grabCell = newState.world[agent.position.y][agent.position.x];
+                if (grabCell.hasGold) {
+                    agent.hasGold = true;
+                    grabCell.hasGold = false;
+                    grabCell.hasGlitter = false;
+                    newState.score += 1000;
+                    newState.thoughts.push('🏆 Gold acquired! +1000 points!');
+                    newState.message = 'Gold collected! Return to start to win!';
+                } else {
+                    newState.thoughts.push('Nothing to grab here');
+                }
+                break;
+
+            case 'CLIMB':
+                if (agent.position.x === 0 && agent.position.y === 0) {
+                    if (agent.hasGold) {
+                        newState.score += 1000;
+                        newState.thoughts.push('🎉 Successfully escaped with gold! Victory!');
+                        newState.message = 'Victory! Agent escaped with the gold!';
+                    } else {
+                        newState.thoughts.push('Climbed out without gold');
+                        newState.message = 'Agent escaped but without the gold';
+                    }
+                    newState.gameOver = true;
+                } else {
+                    newState.thoughts.push('Can only climb out from the start position');
+                }
+                break;
+
+            case 'SHOOT':
+                if (agent.hasArrow) {
+                    agent.hasArrow = false;
+                    newState.thoughts.push('Arrow shot! (Wumpus mechanics not fully implemented)');
+                } else {
+                    newState.thoughts.push('No arrow to shoot');
+                }
+                break;
+        }
+
+        return newState;
+    }
+
+    // Update agent's knowledge base
+    function updateAgentKnowledge(state, position, cell) {
+        const kb = state.knowledgeBase;
+
+        // Add position fact
+        kb.facts.push(`At(${position.x},${position.y})`);
+
+        // Add perception facts
+        if (cell.hasStench) {
+            kb.facts.push(`Stench(${position.x},${position.y})`);
+        }
+        if (cell.hasBreeze) {
+            kb.facts.push(`Breeze(${position.x},${position.y})`);
+        }
+        if (cell.hasGlitter) {
+            kb.facts.push(`Glitter(${position.x},${position.y})`);
+        }
+
+        // Add safety fact if no dangers perceived
+        if (!cell.hasStench && !cell.hasBreeze) {
+            kb.facts.push(`Safe(${position.x},${position.y})`);
+        }
+
+        // Keep only recent facts to avoid clutter
+        if (kb.facts.length > 20) {
+            kb.facts = kb.facts.slice(-20);
+        }
+    }
+
+    // Get new position based on current position and direction
+    function getNewPosition(position, direction) {
+        const newPos = { ...position };
+
+        switch (direction) {
+            case 'NORTH':
+                newPos.y -= 1;
+                break;
+            case 'SOUTH':
+                newPos.y += 1;
+                break;
+            case 'EAST':
+                newPos.x += 1;
+                break;
+            case 'WEST':
+                newPos.x -= 1;
+                break;
+        }
+
+        return newPos;
+    }
+
+    // Check if position is valid (within bounds)
+    function isValidPosition(position) {
+        return position.x >= 0 && position.x < 10 && position.y >= 0 && position.y < 10;
+    }
+
+    // Turn left from current direction
+    function turnLeft(direction) {
+        const directions = ['NORTH', 'WEST', 'SOUTH', 'EAST'];
+        const currentIndex = directions.indexOf(direction);
+        return directions[(currentIndex + 1) % 4];
+    }
+
+    // Toggle auto-play mode
+    function toggleAutoPlay() {
+        if (isAutoPlaying) {
+            stopAutoPlay();
+        } else {
+            startAutoPlay();
+        }
+    }
+
+    // Start auto-play
+    function startAutoPlay() {
+        if (!gameState || gameState.gameOver) {
+            return;
+        }
+
+        isAutoPlaying = true;
+        document.getElementById('autoPlayBtn').textContent = '⏸️ Pause';
+
+        autoPlayInterval = setInterval(() => {
+            if (gameState && !gameState.gameOver && gameState.agent.alive) {
+                stepAgent();
+            } else {
+                stopAutoPlay();
+            }
+        }, autoPlaySpeed);
+    }
+
+    // Stop auto-play
+    function stopAutoPlay() {
+        if (autoPlayInterval) {
+            clearInterval(autoPlayInterval);
+            autoPlayInterval = null;
+        }
+        isAutoPlaying = false;
+        document.getElementById('autoPlayBtn').textContent = '▶️ Auto Play';
+    }
+
+    // Stop the game
+    function stopGame() {
+        stopAutoPlay();
+        if (gameState) {
+            gameState.gameOver = true;
+        }
+    }
+
+    // Update auto-play speed
+    function updateSpeed(value) {
+        autoPlaySpeed = parseInt(value);
+        document.getElementById('speedLabel').textContent = `${autoPlaySpeed}ms`;
+
+        if (isAutoPlaying) {
+            stopAutoPlay();
+            startAutoPlay();
+        }
+    }
+
+    // Initialize the game when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeGrid();
+
+        // Initialize knowledge base display
+        updateKnowledgeBase({
+            facts: ['Agent initialized', 'Ready to explore'],
+            rules: [
+                'Stench → Wumpus adjacent',
+                'Breeze → Pit adjacent',
+                'Glitter → Gold here',
+                'Safe cells have no breeze or stench'
+            ]
+        });
+    });
+</script>
+</body>
+</html>
