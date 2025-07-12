@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -12,10 +13,10 @@
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #0a192f; /* Navy blue background */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #e6f1ff; /* Light blue text */
             min-height: 100vh;
-            color: #fff;
         }
 
         .container {
@@ -31,16 +32,13 @@
 
         .header h1 {
             font-size: 3rem;
-            background: linear-gradient(45deg, #FFD700, #FFA500);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            color: #64ffda; /* Teal accent */
             margin-bottom: 10px;
         }
 
         .header p {
             font-size: 1.2rem;
-            opacity: 0.9;
+            color: #8892b0; /* Lighter navy */
         }
 
         .game-container {
@@ -51,93 +49,86 @@
         }
 
         .world-container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
+            background: #112240; /* Dark navy */
+            border-radius: 15px;
             padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid #1e2a47;
         }
 
         .world-grid {
             display: grid;
             grid-template-columns: repeat(10, 1fr);
             gap: 2px;
-            background: #333;
+            background: #020c1b; /* Very dark navy */
             border-radius: 10px;
             padding: 10px;
-            max-width: 600px;
-            margin: 0 auto;
+            margin-bottom: 20px;
         }
 
         .cell {
             aspect-ratio: 1;
-            background: #f0f0f0;
-            border: 1px solid #ccc;
-            position: relative;
+            background: #233554; /* Medium navy */
+            border: 1px solid #1e2a47;
+            color: #e6f1ff;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 10px;
+            font-size: 1.2rem; /* Larger symbols */
             border-radius: 4px;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         .cell:hover {
             transform: scale(1.05);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            box-shadow: 0 0 10px rgba(100, 255, 218, 0.3);
         }
 
         .cell.visited {
-            background: #e8f5e8;
-            border-color: #4CAF50;
+            background: #1a3a6e;
+            border-color: #64ffda;
         }
 
         .cell.agent {
-            background: linear-gradient(45deg, #2196F3, #21CBF3);
-            color: white;
+            background: #0a192f;
+            color: #64ffda;
             font-weight: bold;
-            border: 3px solid #fff;
-            box-shadow: 0 0 15px rgba(33, 150, 243, 0.6);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 15px rgba(33, 150, 243, 0.6); }
-            50% { box-shadow: 0 0 25px rgba(33, 150, 243, 0.9); }
-            100% { box-shadow: 0 0 15px rgba(33, 150, 243, 0.6); }
+            border: 2px solid #64ffda;
+            box-shadow: 0 0 15px rgba(100, 255, 218, 0.5);
         }
 
         .cell.wumpus {
-            background: #8B0000;
-            color: #FFD700;
+            background: #4a0a0a;
+            color: #ff5555;
         }
 
         .cell.pit {
-            background: #2F2F2F;
-            color: #FF6B6B;
+            background: #1a1a2e;
+            color: #888;
         }
 
         .cell.gold {
-            background: linear-gradient(45deg, #FFD700, #FFA500);
-            color: #8B4513;
-            font-weight: bold;
+            background: #3d3d1a;
+            color: #ffd700;
         }
 
         .cell.stench {
-            background: linear-gradient(135deg, #FFA07A, #FA8072);
+            background: #3a2e2e;
+            color: #ff7f7f;
         }
 
         .cell.breeze {
-            background: linear-gradient(135deg, #87CEEB, #4682B4);
+            background: #2c3e50;
+            color: #add8e6;
         }
 
         .cell.glitter {
-            background: linear-gradient(45deg, #FFD700, #FFFF00);
-            animation: sparkle 1s infinite alternate;
+            background: #606060;
+            color: #ffff00;
+            animation: glitter 1s infinite alternate;
         }
 
-        @keyframes sparkle {
-            0% { opacity: 0.8; }
+        @keyframes glitter {
+            0% { opacity: 0.7; }
             100% { opacity: 1; }
         }
 
@@ -148,16 +139,15 @@
         }
 
         .panel {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            background: #112240;
             border-radius: 15px;
             padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid #1e2a47;
         }
 
         .panel h3 {
             margin-bottom: 15px;
-            color: #FFD700;
+            color: #64ffda;
             font-size: 1.3rem;
         }
 
@@ -168,71 +158,78 @@
         }
 
         .btn {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
+            background: #1e2a47;
+            color: #e6f1ff;
             border: none;
-            padding: 12px 20px;
-            border-radius: 25px;
+            padding: 12px 16px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .btn:hover {
+            background: #233554;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-        }
-
-        .btn:active {
-            transform: translateY(0);
         }
 
         .btn.primary {
-            background: linear-gradient(45deg, #4CAF50, #45a049);
+            background: #1a3a6e;
+            color: #64ffda;
         }
 
         .btn.secondary {
-            background: linear-gradient(45deg, #FF9800, #F57C00);
+            background: #3d3d1a;
+            color: #ffd700;
         }
 
         .btn.danger {
-            background: linear-gradient(45deg, #f44336, #d32f2f);
+            background: #4a0a0a;
+            color: #ff5555;
         }
 
         .status {
             font-size: 0.9rem;
-            line-height: 1.6;
+            color: #8892b0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
         }
 
         .status .label {
             font-weight: bold;
-            color: #FFD700;
+            color: #64ffda;
         }
 
         .thoughts {
             max-height: 200px;
             overflow-y: auto;
-            background: rgba(0, 0, 0, 0.3);
+            background: #0a192f;
             padding: 15px;
-            border-radius: 10px;
-            margin-top: 10px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            line-height: 1.5;
         }
 
         .thought {
-            padding: 5px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: 0.85rem;
-            opacity: 0.9;
+            padding: 8px 0;
+            border-bottom: 1px solid #1e2a47;
+            margin-bottom: 8px;
         }
 
         .thought:last-child {
             border-bottom: none;
+            margin-bottom: 0;
         }
 
         .knowledge-base {
             max-height: 300px;
             overflow-y: auto;
+            font-size: 0.8rem;
         }
 
         .kb-section {
@@ -240,37 +237,42 @@
         }
 
         .kb-section h4 {
-            color: #FFA500;
-            margin-bottom: 5px;
+            color: #64ffda;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
         }
 
-        .kb-facts, .kb-rules {
-            font-size: 0.8rem;
-            background: rgba(0, 0, 0, 0.2);
+        .kb-facts, .kb-rules, .kb-safe, .kb-risk {
+            background: #0a192f;
             padding: 10px;
             border-radius: 8px;
-            max-height: 100px;
-            overflow-y: auto;
+            margin-bottom: 10px;
+            border: 1px solid #1e2a47;
         }
 
-        .kb-facts div, .kb-rules div {
-            padding: 2px 0;
-            opacity: 0.9;
+        .kb-item {
+            padding: 5px 0;
+            border-bottom: 1px dashed #1e2a47;
+        }
+
+        .kb-item:last-child {
+            border-bottom: none;
         }
 
         .score-display {
             font-size: 1.5rem;
             text-align: center;
-            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #64ffda;
             font-weight: bold;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #1e2a47;
         }
 
         .legend {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
             margin-top: 20px;
         }
 
@@ -279,26 +281,29 @@
             align-items: center;
             gap: 8px;
             font-size: 0.85rem;
+            color: #e6f1ff;
         }
 
         .legend-color {
             width: 20px;
             height: 20px;
             border-radius: 4px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid #1e2a47;
         }
 
         .message-display {
-            background: rgba(255, 255, 255, 0.1);
+            background: #112240;
             padding: 15px;
             border-radius: 10px;
             text-align: center;
             font-weight: bold;
-            margin-bottom: 20px;
             min-height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: #64ffda;
+            margin-bottom: 20px;
+            border: 1px solid #1e2a47;
         }
 
         .auto-play-controls {
@@ -308,7 +313,14 @@
         }
 
         .speed-control {
-            flex: 1;
+            margin-top: 10px;
+        }
+
+        .speed-control label {
+            display: block;
+            margin-bottom: 5px;
+            color: #8892b0;
+            font-size: 0.9rem;
         }
 
         .speed-control input {
@@ -325,8 +337,12 @@
                 font-size: 2rem;
             }
 
-            .world-grid {
-                max-width: 100%;
+            .status {
+                grid-template-columns: 1fr;
+            }
+
+            .legend {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
@@ -335,12 +351,14 @@
 <div class="container">
     <div class="header">
         <h1>🏴‍☠️ Wumpus World AI Agent 🧠</h1>
-        <p>Watch the AI agent navigate through logical reasoning and inference</p>
+        <p>Backend-powered logical reasoning and inference</p>
     </div>
 
     <div class="message-display" id="messageDisplay">
         Welcome to Wumpus World! Click "New Game" to start.
     </div>
+
+    <div id="errorDisplay" class="error-message" style="display: none; color: #ff5555; padding: 10px; background: #4a0a0a; border-radius: 5px; margin-bottom: 20px;"></div>
 
     <div class="game-container">
         <div class="world-container">
@@ -350,35 +368,35 @@
 
             <div class="legend">
                 <div class="legend-item">
-                    <div class="legend-color" style="background: linear-gradient(45deg, #2196F3, #21CBF3);"></div>
+                    <div class="legend-color" style="background: #0a192f; border-color: #64ffda;"></div>
                     <span>Agent</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background: #8B0000;"></div>
+                    <div class="legend-color" style="background: #4a0a0a;"></div>
                     <span>Wumpus</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background: #2F2F2F;"></div>
+                    <div class="legend-color" style="background: #1a1a2e;"></div>
                     <span>Pit</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background: linear-gradient(45deg, #FFD700, #FFA500);"></div>
+                    <div class="legend-color" style="background: #3d3d1a;"></div>
                     <span>Gold</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background: linear-gradient(135deg, #FFA07A, #FA8072);"></div>
+                    <div class="legend-color" style="background: #3a2e2e;"></div>
                     <span>Stench</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background: linear-gradient(135deg, #87CEEB, #4682B4);"></div>
+                    <div class="legend-color" style="background: #2c3e50;"></div>
                     <span>Breeze</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background: #e8f5e8;"></div>
+                    <div class="legend-color" style="background: #1a3a6e;"></div>
                     <span>Visited</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background: linear-gradient(45deg, #FFD700, #FFFF00);"></div>
+                    <div class="legend-color" style="background: #606060; animation: glitter 1s infinite alternate;"></div>
                     <span>Glitter</span>
                 </div>
             </div>
@@ -410,14 +428,16 @@
                     <div><span class="label">Direction:</span> <span id="agentDir">EAST</span></div>
                     <div><span class="label">Has Gold:</span> <span id="hasGold">No</span></div>
                     <div><span class="label">Has Arrow:</span> <span id="hasArrow">Yes</span></div>
+                    <div><span class="label">Wumpus Killed:</span> <span id="wumpusKilled">No</span></div>
+                    <div><span class="label">Moves:</span> <span id="moveCount">0</span></div>
                     <div class="score-display">Score: <span id="gameScore">0</span></div>
                 </div>
             </div>
 
             <div class="panel">
-                <h3>🧠 AI Thoughts</h3>
+                <h3>🧠 AI Reasoning</h3>
                 <div class="thoughts" id="thoughtsDisplay">
-                    <div class="thought">AI agent initialized and ready...</div>
+                    <div class="thought">Backend LogicalAgent ready for sophisticated reasoning...</div>
                 </div>
             </div>
 
@@ -427,13 +447,31 @@
                     <div class="kb-section">
                         <h4>Facts</h4>
                         <div class="kb-facts" id="kbFacts">
-                            <div>Loading...</div>
+                            <div class="kb-item">Waiting for backend...</div>
+                        </div>
+                    </div>
+                    <div class="kb-section">
+                        <h4>Derived Facts</h4>
+                        <div class="kb-facts" id="kbDerived">
+                            <div class="kb-item">Waiting for backend...</div>
                         </div>
                     </div>
                     <div class="kb-section">
                         <h4>Rules</h4>
                         <div class="kb-rules" id="kbRules">
-                            <div>Loading...</div>
+                            <div class="kb-item">Waiting for backend...</div>
+                        </div>
+                    </div>
+                    <div class="kb-section">
+                        <h4>Safe Cells</h4>
+                        <div class="kb-safe" id="kbSafe">
+                            <div class="kb-item">Calculating...</div>
+                        </div>
+                    </div>
+                    <div class="kb-section">
+                        <h4>Risk Assessment</h4>
+                        <div class="kb-risk" id="kbRisk">
+                            <div class="kb-item">Analyzing...</div>
                         </div>
                     </div>
                 </div>
@@ -447,6 +485,9 @@
     let autoPlayInterval = null;
     let autoPlaySpeed = 1000;
     let isAutoPlaying = false;
+
+    // Backend API base URL - adjust this to your Spring Boot server
+    const API_BASE_URL = '';  // Empty for same-origin requests
 
     // Initialize the game grid
     function initializeGrid() {
@@ -463,581 +504,335 @@
         }
     }
 
-    // Update the visual display
+    // Show error message
+    function showError(message) {
+        const errorDiv = document.getElementById('errorDisplay');
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+        setTimeout(() => {
+            errorDiv.style.display = 'none';
+        }, 5000);
+    }
+
     function updateDisplay(state) {
-        gameState = state;
+    if (!state) {
+        console.warn('No game state provided');
+        return;
+    }
 
-        // Update message
-        document.getElementById('messageDisplay').textContent = state.message || 'Game in progress...';
+    console.log("🔍 Full game state:", state);
 
-        // Update agent status
-        const agent = state.agent;
-        document.getElementById('agentPos').textContent = `(${agent.position.x},${agent.position.y})`;
-        document.getElementById('agentDir').textContent = agent.direction;
-        document.getElementById('hasGold').textContent = agent.hasGold ? 'Yes' : 'No';
-        document.getElementById('hasArrow').textContent = agent.hasArrow ? 'Yes' : 'No';
-        document.getElementById('gameScore').textContent = state.score;
+    gameState = state;
 
-        // Clear all cells
-        for (let i = 0; i < 100; i++) {
-            const cell = document.getElementById(`cell-${i}`);
-            if (cell) {
-                cell.className = 'cell';
-                cell.textContent = '';
-            }
+    const agentData = state.agent || {};
+    const worldData = state.world || {};
+
+    console.log("🌍 World data:", worldData);
+    console.log("🤖 Agent data:", agentData);
+
+    // Extract agent position
+    let agentX = 0, agentY = 0;
+    if (agentData.currentPos) {
+        agentX = agentData.currentPos.x;
+        agentY = agentData.currentPos.y;
+    } else if (agentData.position) {
+        agentX = agentData.position.x;
+        agentY = agentData.position.y;
+    } else if (worldData.agentPos) {
+        agentX = worldData.agentPos.x;
+        agentY = worldData.agentPos.y;
+    }
+
+    // Agent status display
+    document.getElementById('agentPos').textContent = `(${agentX},${agentY})`;
+    document.getElementById('agentDir').textContent = agentData.currentDirection || agentData.direction || 'EAST';
+    document.getElementById('hasGold').textContent = (agentData.hasGold || worldData.hasGold) ? 'Yes' : 'No';
+    document.getElementById('hasArrow').textContent = (agentData.hasArrow || worldData.hasArrow) ? 'Yes' : 'No';
+    document.getElementById('wumpusKilled').textContent = agentData.wumpusKilled ? 'Yes' : 'No';
+    document.getElementById('moveCount').textContent = agentData.moveCount || 0;
+    document.getElementById('gameScore').textContent = state.score || worldData.score || 0;
+    document.getElementById('messageDisplay').textContent = state.message || 'Game in progress...';
+
+    // Clear all grid cells
+    for (let i = 0; i < 100; i++) {
+        const cell = document.getElementById(`cell-${i}`);
+        if (cell) {
+            cell.className = 'cell';
+            cell.textContent = '';
         }
+    }
 
-        // Update world cells
-        state.world.forEach((row, y) => {
-            row.forEach((cell, x) => {
+    // Update world grid from 3D backend array: grid[y][x] = [wumpus, pit, gold, stench, breeze, glitter, visited]
+    if (worldData.grid) {
+        for (let y = 0; y < 10; y++) {
+            for (let x = 0; x < 10; x++) {
                 const cellId = `cell-${y * 10 + x}`;
                 const cellElement = document.getElementById(cellId);
-                if (!cellElement) return;
+                if (!cellElement) continue;
+
+                let cellData = {};
+                if (Array.isArray(worldData.grid)) {
+                    if (worldData.grid[y] && worldData.grid[y][x]) {
+                        const values = worldData.grid[y][x];
+                        cellData = {
+                            wumpus: values[0],
+                            pit: values[1],
+                            gold: values[2],
+                            stench: values[3],
+                            breeze: values[4],
+                            glitter: values[5],
+                            visited: values[6],
+                        };
+                    } else {
+                        cellElement.textContent = '❓';
+                        cellElement.className = 'cell unknown';
+                        continue;
+                    }
+                }
 
                 let classes = ['cell'];
                 let content = '';
 
-                // Agent position
-                if (agent.position.x === x && agent.position.y === y) {
+                if (agentX === x && agentY === y) {
                     classes.push('agent');
                     content = '🤖';
-                }
-
-                // World contents
-                if (cell.hasWumpus) {
+                } else if (cellData.wumpus) {
                     classes.push('wumpus');
                     content = '👹';
-                }
-                if (cell.hasPit) {
+                } else if (cellData.pit) {
                     classes.push('pit');
                     content = '🕳️';
-                }
-                if (cell.hasGold) {
+                } else if (cellData.gold) {
                     classes.push('gold');
                     content = '💰';
                 }
 
-                // Perceptions
-                if (cell.hasStench) {
-                    classes.push('stench');
-                    if (!content) content = '💨';
-                }
-                if (cell.hasBreeze) {
-                    classes.push('breeze');
-                    if (!content) content = '🌪️';
-                }
-                if (cell.hasGlitter) {
-                    classes.push('glitter');
-                    if (!content) content = '✨';
+                if (!content) {
+                    if (cellData.stench) {
+                        classes.push('stench');
+                        content += '💨';
+                    }
+                    if (cellData.breeze) {
+                        classes.push('breeze');
+                        content += '🌪️';
+                    }
+                    if (cellData.glitter) {
+                        classes.push('glitter');
+                        content += '✨';
+                    }
                 }
 
-                // Visited cells
-                if (state.visitedCells && state.visitedCells.some(pos => pos.x === x && pos.y === y)) {
+                if (cellData.visited || (agentData.visitedPositions && agentData.visitedPositions.some(pos => pos.x === x && pos.y === y))) {
                     classes.push('visited');
                 }
 
                 cellElement.className = classes.join(' ');
                 cellElement.textContent = content;
-            });
-        });
-
-        // Update AI thoughts
-        if (state.thoughts && state.thoughts.length > 0) {
-            const thoughtsDiv = document.getElementById('thoughtsDisplay');
-            thoughtsDiv.innerHTML = '';
-            state.thoughts.slice(-10).forEach(thought => {
-                const thoughtElement = document.createElement('div');
-                thoughtElement.className = 'thought';
-                thoughtElement.textContent = thought;
-                thoughtsDiv.appendChild(thoughtElement);
-            });
-            thoughtsDiv.scrollTop = thoughtsDiv.scrollHeight;
+            }
         }
-
-        // Update knowledge base
-        updateKnowledgeBase(state.knowledgeBase);
+    } else {
+        console.warn("⚠️ No worldData.grid present.");
     }
+
+    // Update thoughts
+    const thoughtsDiv = document.getElementById('thoughtsDisplay');
+    thoughtsDiv.innerHTML = '';
+    if (agentData.thoughtProcess && agentData.thoughtProcess.length > 0) {
+        agentData.thoughtProcess.slice(-10).forEach(thought => {
+            const thoughtElement = document.createElement('div');
+            thoughtElement.className = 'thought';
+            thoughtElement.textContent = thought;
+            thoughtsDiv.appendChild(thoughtElement);
+        });
+    } else {
+        thoughtsDiv.innerHTML = '<div class="thought">No thoughts recorded yet...</div>';
+    }
+    thoughtsDiv.scrollTop = thoughtsDiv.scrollHeight;
+
+    // Update knowledge base if available
+    updateKnowledgeBase(agentData.knowledgeBase || agentData.kb);
+}
+
 
     // Update knowledge base display
     function updateKnowledgeBase(kb) {
-        if (!kb) return;
+        if (!kb) {
+            kb = {
+                facts: ['No facts yet'],
+                derivedFacts: ['No derived facts yet'],
+                rules: ['No rules yet'],
+                safeCells: [],
+                riskAssessment: {}
+            };
+        }
 
         const factsDiv = document.getElementById('kbFacts');
+        const derivedDiv = document.getElementById('kbDerived');
         const rulesDiv = document.getElementById('kbRules');
+        const safeDiv = document.getElementById('kbSafe');
+        const riskDiv = document.getElementById('kbRisk');
 
+        // Clear existing content
         factsDiv.innerHTML = '';
+        derivedDiv.innerHTML = '';
         rulesDiv.innerHTML = '';
+        safeDiv.innerHTML = '';
+        riskDiv.innerHTML = '';
 
+        // Update facts
         if (kb.facts && kb.facts.length > 0) {
-            kb.facts.forEach(fact => {
+            kb.facts.slice(-10).forEach(fact => {
                 const factElement = document.createElement('div');
+                factElement.className = 'kb-item';
                 factElement.textContent = fact;
                 factsDiv.appendChild(factElement);
             });
         } else {
-            factsDiv.innerHTML = '<div>No facts yet...</div>';
+            factsDiv.innerHTML = '<div class="kb-item">No facts yet...</div>';
         }
 
+        // Update derived facts
+        if (kb.derivedFacts && kb.derivedFacts.length > 0) {
+            kb.derivedFacts.slice(-10).forEach(fact => {
+                const factElement = document.createElement('div');
+                factElement.className = 'kb-item';
+                factElement.textContent = fact;
+                derivedDiv.appendChild(factElement);
+            });
+        } else {
+            derivedDiv.innerHTML = '<div class="kb-item">No derived facts yet...</div>';
+        }
+
+        // Update rules
         if (kb.rules && kb.rules.length > 0) {
             kb.rules.forEach(rule => {
                 const ruleElement = document.createElement('div');
-                ruleElement.textContent = rule;
+                ruleElement.className = 'kb-item';
+                // Handle both string rules and rule objects
+                if (typeof rule === 'string') {
+                    ruleElement.textContent = rule;
+                } else if (rule.originalRule) {
+                    ruleElement.textContent = rule.originalRule;
+                } else if (rule.conclusion) {
+                    ruleElement.textContent = `${rule.premises?.join(' & ')} => ${rule.conclusion}`;
+                }
                 rulesDiv.appendChild(ruleElement);
             });
         } else {
-            rulesDiv.innerHTML = '<div>No rules yet...</div>';
+            rulesDiv.innerHTML = '<div class="kb-item">No rules yet...</div>';
+        }
+
+        // Update safe cells
+        if (kb.safeCells && kb.safeCells.length > 0) {
+            kb.safeCells.slice(-10).forEach(cell => {
+                const cellElement = document.createElement('div');
+                cellElement.className = 'kb-item';
+                if (cell.x !== undefined && cell.y !== undefined) {
+                    cellElement.textContent = `(${cell.x},${cell.y})`;
+                } else if (cell.position) {
+                    cellElement.textContent = `(${cell.position.x},${cell.position.y})`;
+                } else if (typeof cell === 'string') {
+                    cellElement.textContent = cell;
+                }
+                safeDiv.appendChild(cellElement);
+            });
+        } else {
+            safeDiv.innerHTML = '<div class="kb-item">No safe cells identified...</div>';
+        }
+
+        // Update risk assessment
+        if (kb.riskAssessment && Object.keys(kb.riskAssessment).length > 0) {
+            Object.entries(kb.riskAssessment).forEach(([pos, risk]) => {
+                const riskElement = document.createElement('div');
+                riskElement.className = 'kb-item';
+                riskElement.textContent = `${pos}: ${(risk * 100).toFixed(1)}%`;
+                riskDiv.appendChild(riskElement);
+            });
+        } else {
+            riskDiv.innerHTML = '<div class="kb-item">No risk assessment available...</div>';
         }
     }
 
-    // Create a new game
-    function newGame(type) {
+    // API call to create a new game
+    async function newGame(type) {
         stopGame();
 
-        const world = type === 'predefined' ? createPredefinedWorld() : createRandomWorld();
-        gameState = {
-            world: world,
-            agent: {
-                position: { x: 0, y: 0 },
-                direction: 'EAST',
-                hasGold: false,
-                hasArrow: true,
-                alive: true
-            },
-            score: 0,
-            gameOver: false,
-            visitedCells: [{ x: 0, y: 0 }],
-            thoughts: ['Game started! Starting at position (0,0)', 'Analyzing current perceptions...'],
-            knowledgeBase: {
-                facts: ['At(0,0)', 'FacingEast', 'HasArrow'],
-                rules: [
-                    'Stench → Wumpus adjacent',
-                    'Breeze → Pit adjacent',
-                    'Glitter → Gold here',
-                    'Safe cells have no breeze or stench'
-                ]
-            },
-            message: 'New game started! Agent is ready to explore.'
-        };
+        try {
+            const formData = new FormData();
+            formData.append('type', type);
 
-        updateDisplay(gameState);
-    }
+            const response = await fetch(`${API_BASE_URL}/new-game`, {
+                method: 'POST',
+                body: formData
+            });
 
-    // Create a predefined test world
-    function createPredefinedWorld() {
-        const world = [];
-        for (let y = 0; y < 10; y++) {
-            const row = [];
-            for (let x = 0; x < 10; x++) {
-                row.push({
-                    hasWumpus: false,
-                    hasPit: false,
-                    hasGold: false,
-                    hasStench: false,
-                    hasBreeze: false,
-                    hasGlitter: false
-                });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-            world.push(row);
-        }
 
-        // Place Wumpus at (3,2)
-        world[2][3].hasWumpus = true;
+            const data = await response.json();
+            updateDisplay(data);
 
-        // Place pits
-        world[2][2].hasPit = true;
-        world[4][4].hasPit = true;
-        world[1][5].hasPit = true;
+            // Also update knowledge base after new game
+            await getKnowledgeBase();
 
-        // Place gold at (7,6)
-        world[6][7].hasGold = true;
-        world[6][7].hasGlitter = true;
-
-        // Add perceptions
-        addPerceptions(world);
-
-        return world;
-    }
-
-    // Create a random world
-    function createRandomWorld() {
-        const world = [];
-        for (let y = 0; y < 10; y++) {
-            const row = [];
-            for (let x = 0; x < 10; x++) {
-                row.push({
-                    hasWumpus: false,
-                    hasPit: false,
-                    hasGold: false,
-                    hasStench: false,
-                    hasBreeze: false,
-                    hasGlitter: false
-                });
-            }
-            world.push(row);
-        }
-
-        // Place one Wumpus randomly (not at starting position)
-        let wumpusPlaced = false;
-        while (!wumpusPlaced) {
-            const x = Math.floor(Math.random() * 10);
-            const y = Math.floor(Math.random() * 10);
-            if (!(x === 0 && y === 0)) {
-                world[y][x].hasWumpus = true;
-                wumpusPlaced = true;
-            }
-        }
-
-        // Place 8-12 pits randomly
-        const numPits = 8 + Math.floor(Math.random() * 5);
-        let pitsPlaced = 0;
-        while (pitsPlaced < numPits) {
-            const x = Math.floor(Math.random() * 10);
-            const y = Math.floor(Math.random() * 10);
-            if (!(x === 0 && y === 0) && !world[y][x].hasPit && !world[y][x].hasWumpus) {
-                world[y][x].hasPit = true;
-                pitsPlaced++;
-            }
-        }
-
-        // Place gold randomly
-        let goldPlaced = false;
-        while (!goldPlaced) {
-            const x = Math.floor(Math.random() * 10);
-            const y = Math.floor(Math.random() * 10);
-            if (!world[y][x].hasWumpus && !world[y][x].hasPit) {
-                world[y][x].hasGold = true;
-                world[y][x].hasGlitter = true;
-                goldPlaced = true;
-            }
-        }
-
-        // Add perceptions
-        addPerceptions(world);
-
-        return world;
-    }
-
-    // Add perceptions (stench, breeze) to the world
-    function addPerceptions(world) {
-        for (let y = 0; y < 10; y++) {
-            for (let x = 0; x < 10; x++) {
-                // Check for stench (adjacent to Wumpus)
-                const adjacent = getAdjacentCells(x, y);
-                for (const adj of adjacent) {
-                    if (world[adj.y][adj.x].hasWumpus) {
-                        world[y][x].hasStench = true;
-                    }
-                    if (world[adj.y][adj.x].hasPit) {
-                        world[y][x].hasBreeze = true;
-                    }
-                }
-            }
+        } catch (error) {
+            console.error('Error creating new game:', error);
+            showError('Failed to create new game. Make sure the Spring Boot server is running.');
         }
     }
 
-    // Get adjacent cells (north, south, east, west)
-    function getAdjacentCells(x, y) {
-        const adjacent = [];
-        const directions = [
-            { dx: 0, dy: -1 }, // North
-            { dx: 0, dy: 1 },  // South
-            { dx: 1, dy: 0 },  // East
-            { dx: -1, dy: 0 }  // West
-        ];
-
-        for (const dir of directions) {
-            const newX = x + dir.dx;
-            const newY = y + dir.dy;
-            if (newX >= 0 && newX < 10 && newY >= 0 && newY < 10) {
-                adjacent.push({ x: newX, y: newY });
-            }
-        }
-
-        return adjacent;
-    }
-
-    // Execute one step of the AI agent
-    function stepAgent() {
-        if (!gameState || gameState.gameOver || !gameState.agent.alive) {
+    // API call to execute one step of the AI agent
+    async function stepAgent() {
+        if (!gameState) {
+            showError('No active game. Please start a new game first.');
             return;
         }
 
-        const action = decideAction(gameState);
-        gameState = executeAction(gameState, action);
-        updateDisplay(gameState);
+        try {
+            const response = await fetch(`${API_BASE_URL}/step`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
 
-        if (gameState.gameOver) {
-            stopGame();
-        }
-    }
-
-    // AI decision making
-    function decideAction(state) {
-        const agent = state.agent;
-        const currentCell = state.world[agent.position.y][agent.position.x];
-
-        // Add thoughts
-        state.thoughts.push(`Thinking at position (${agent.position.x},${agent.position.y})`);
-
-        // If gold is here, grab it
-        if (currentCell.hasGold && !agent.hasGold) {
-            state.thoughts.push('Gold detected! Grabbing it.');
-            return { type: 'GRAB' };
-        }
-
-        // If we have gold, try to return to start
-        if (agent.hasGold) {
-            if (agent.position.x === 0 && agent.position.y === 0) {
-                state.thoughts.push('Back at start with gold! Climbing out.');
-                return { type: 'CLIMB' };
-            } else {
-                state.thoughts.push('Have gold, returning to start...');
-                return findPathToStart(state);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-        }
 
-        // Explore safe adjacent cells
-        const safeCells = findSafeCells(state);
-        const unvisitedSafeCells = safeCells.filter(cell =>
-            !state.visitedCells.some(visited => visited.x === cell.x && visited.y === cell.y)
-        );
+            const data = await response.json();
+            updateDisplay(data);
 
-        if (unvisitedSafeCells.length > 0) {
-            const target = unvisitedSafeCells[0];
-            state.thoughts.push(`Moving to safe unvisited cell (${target.x},${target.y})`);
-            return moveTowardsTarget(state, target);
-        }
+            // Update knowledge base after each step
+            await getKnowledgeBase();
 
-        // If no safe unvisited cells, explore randomly
-        const adjacentCells = getAdjacentCells(agent.position.x, agent.position.y);
-        const validMoves = adjacentCells.filter(cell =>
-            !state.world[cell.y][cell.x].hasPit && !state.world[cell.y][cell.x].hasWumpus
-        );
-
-        if (validMoves.length > 0) {
-            const target = validMoves[Math.floor(Math.random() * validMoves.length)];
-            state.thoughts.push(`Exploring randomly to (${target.x},${target.y})`);
-            return moveTowardsTarget(state, target);
-        }
-
-        // No good moves, turn randomly
-        state.thoughts.push('No good moves, turning...');
-        return { type: 'TURN_LEFT' };
-    }
-
-    // Find safe cells based on knowledge
-    function findSafeCells(state) {
-        const safeCells = [];
-        const agent = state.agent;
-
-        for (let y = 0; y < 10; y++) {
-            for (let x = 0; x < 10; x++) {
-                const cell = state.world[y][x];
-                // A cell is safe if it has no breeze and no stench, or if we've visited it
-                if ((!cell.hasBreeze && !cell.hasStench) ||
-                    state.visitedCells.some(visited => visited.x === x && visited.y === y)) {
-                    safeCells.push({ x, y });
-                }
+            if (data.gameOver) {
+                stopGame();
             }
-        }
 
-        return safeCells;
-    }
-
-    // Move towards a target position
-    function moveTowardsTarget(state, target) {
-        const agent = state.agent;
-        const dx = target.x - agent.position.x;
-        const dy = target.y - agent.position.y;
-
-        // Determine required direction
-        let targetDirection;
-        if (dx > 0) targetDirection = 'EAST';
-        else if (dx < 0) targetDirection = 'WEST';
-        else if (dy > 0) targetDirection = 'SOUTH';
-        else if (dy < 0) targetDirection = 'NORTH';
-
-        // Turn to face the target direction
-        if (agent.direction !== targetDirection) {
-            return { type: 'TURN_LEFT' }; // Simplified turning
-        }
-
-        // Move forward
-        return { type: 'MOVE_FORWARD' };
-    }
-
-    // Find path back to start
-    function findPathToStart(state) {
-        const agent = state.agent;
-        const target = { x: 0, y: 0 };
-        return moveTowardsTarget(state, target);
-    }
-
-    // Execute an action and return new state
-    function executeAction(state, action) {
-        const newState = JSON.parse(JSON.stringify(state)); // Deep copy
-        const agent = newState.agent;
-
-        newState.score -= 1; // Each action costs 1 point
-
-        switch (action.type) {
-            case 'MOVE_FORWARD':
-                const newPos = getNewPosition(agent.position, agent.direction);
-                if (isValidPosition(newPos)) {
-                    agent.position = newPos;
-
-                    // Add to visited cells
-                    if (!newState.visitedCells.some(pos => pos.x === newPos.x && pos.y === newPos.y)) {
-                        newState.visitedCells.push({ x: newPos.x, y: newPos.y });
-                    }
-
-                    const currentCell = newState.world[newPos.y][newPos.x];
-
-                    // Check for dangers
-                    if (currentCell.hasWumpus) {
-                        newState.thoughts.push('💀 Walked into Wumpus! Game Over!');
-                        newState.message = 'Game Over! Agent was eaten by the Wumpus!';
-                        newState.score -= 1000;
-                        newState.gameOver = true;
-                        agent.alive = false;
-                    } else if (currentCell.hasPit) {
-                        newState.thoughts.push('💀 Fell into pit! Game Over!');
-                        newState.message = 'Game Over! Agent fell into a pit!';
-                        newState.score -= 1000;
-                        newState.gameOver = true;
-                        agent.alive = false;
-                    } else {
-                        newState.thoughts.push(`Moved to (${newPos.x},${newPos.y})`);
-
-                        // Report perceptions
-                        const perceptions = [];
-                        if (currentCell.hasStench) perceptions.push('stench');
-                        if (currentCell.hasBreeze) perceptions.push('breeze');
-                        if (currentCell.hasGlitter) perceptions.push('glitter');
-
-                        if (perceptions.length > 0) {
-                            newState.thoughts.push(`Perceptions: ${perceptions.join(', ')}`);
-                        } else {
-                            newState.thoughts.push('No perceptions - this cell seems safe');
-                        }
-
-                        // Update knowledge base
-                        updateAgentKnowledge(newState, newPos, currentCell);
-                    }
-                } else {
-                    newState.thoughts.push('Cannot move forward - wall detected');
-                }
-                break;
-
-            case 'TURN_LEFT':
-                agent.direction = turnLeft(agent.direction);
-                newState.thoughts.push(`Turned left, now facing ${agent.direction}`);
-                break;
-
-            case 'GRAB':
-                const grabCell = newState.world[agent.position.y][agent.position.x];
-                if (grabCell.hasGold) {
-                    agent.hasGold = true;
-                    grabCell.hasGold = false;
-                    grabCell.hasGlitter = false;
-                    newState.score += 1000;
-                    newState.thoughts.push('🏆 Gold acquired! +1000 points!');
-                    newState.message = 'Gold collected! Return to start to win!';
-                } else {
-                    newState.thoughts.push('Nothing to grab here');
-                }
-                break;
-
-            case 'CLIMB':
-                if (agent.position.x === 0 && agent.position.y === 0) {
-                    if (agent.hasGold) {
-                        newState.score += 1000;
-                        newState.thoughts.push('🎉 Successfully escaped with gold! Victory!');
-                        newState.message = 'Victory! Agent escaped with the gold!';
-                    } else {
-                        newState.thoughts.push('Climbed out without gold');
-                        newState.message = 'Agent escaped but without the gold';
-                    }
-                    newState.gameOver = true;
-                } else {
-                    newState.thoughts.push('Can only climb out from the start position');
-                }
-                break;
-
-            case 'SHOOT':
-                if (agent.hasArrow) {
-                    agent.hasArrow = false;
-                    newState.thoughts.push('Arrow shot! (Wumpus mechanics not fully implemented)');
-                } else {
-                    newState.thoughts.push('No arrow to shoot');
-                }
-                break;
-        }
-
-        return newState;
-    }
-
-    // Update agent's knowledge base
-    function updateAgentKnowledge(state, position, cell) {
-        const kb = state.knowledgeBase;
-
-        // Add position fact
-        kb.facts.push(`At(${position.x},${position.y})`);
-
-        // Add perception facts
-        if (cell.hasStench) {
-            kb.facts.push(`Stench(${position.x},${position.y})`);
-        }
-        if (cell.hasBreeze) {
-            kb.facts.push(`Breeze(${position.x},${position.y})`);
-        }
-        if (cell.hasGlitter) {
-            kb.facts.push(`Glitter(${position.x},${position.y})`);
-        }
-
-        // Add safety fact if no dangers perceived
-        if (!cell.hasStench && !cell.hasBreeze) {
-            kb.facts.push(`Safe(${position.x},${position.y})`);
-        }
-
-        // Keep only recent facts to avoid clutter
-        if (kb.facts.length > 20) {
-            kb.facts = kb.facts.slice(-20);
+        } catch (error) {
+            console.error('Error executing agent step:', error);
+            showError('Failed to execute agent step. Check Spring Boot server connection.');
         }
     }
 
-    // Get new position based on current position and direction
-    function getNewPosition(position, direction) {
-        const newPos = { ...position };
+    // API call to get knowledge base
+    async function getKnowledgeBase() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/knowledge-base`);
 
-        switch (direction) {
-            case 'NORTH':
-                newPos.y -= 1;
-                break;
-            case 'SOUTH':
-                newPos.y += 1;
-                break;
-            case 'EAST':
-                newPos.x += 1;
-                break;
-            case 'WEST':
-                newPos.x -= 1;
-                break;
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            updateKnowledgeBase(data);
+
+        } catch (error) {
+            console.error('Error getting knowledge base:', error);
+            // Don't show error for knowledge base as it's not critical
         }
-
-        return newPos;
-    }
-
-    // Check if position is valid (within bounds)
-    function isValidPosition(position) {
-        return position.x >= 0 && position.x < 10 && position.y >= 0 && position.y < 10;
-    }
-
-    // Turn left from current direction
-    function turnLeft(direction) {
-        const directions = ['NORTH', 'WEST', 'SOUTH', 'EAST'];
-        const currentIndex = directions.indexOf(direction);
-        return directions[(currentIndex + 1) % 4];
     }
 
     // Toggle auto-play mode
@@ -1050,17 +845,18 @@
     }
 
     // Start auto-play
-    function startAutoPlay() {
-        if (!gameState || gameState.gameOver) {
+    async function startAutoPlay() {
+        if (!gameState) {
+            showError('No active game. Please start a new game first.');
             return;
         }
 
         isAutoPlaying = true;
         document.getElementById('autoPlayBtn').textContent = '⏸️ Pause';
 
-        autoPlayInterval = setInterval(() => {
-            if (gameState && !gameState.gameOver && gameState.agent.alive) {
-                stepAgent();
+        autoPlayInterval = setInterval(async () => {
+            if (gameState && !gameState.gameOver) {
+                await stepAgent();
             } else {
                 stopAutoPlay();
             }
@@ -1102,14 +898,20 @@
 
         // Initialize knowledge base display
         updateKnowledgeBase({
-            facts: ['Agent initialized', 'Ready to explore'],
+            facts: ['Backend LogicalAgent ready'],
+            derivedFacts: ['Logical reasoning engine initialized'],
             rules: [
-                'Stench → Wumpus adjacent',
-                'Breeze → Pit adjacent',
-                'Glitter → Gold here',
-                'Safe cells have no breeze or stench'
-            ]
+                'Stench(x,y) ⇒ Adjacent(x,y,wx,wy) ∧ Wumpus(wx,wy)',
+                'Breeze(x,y) ⇒ Adjacent(x,y,px,py) ∧ Pit(px,py)',
+                '¬Stench(x,y) ∧ Visited(x,y) ⇒ Safe adjacent cells',
+                '¬Breeze(x,y) ∧ Visited(x,y) ⇒ Safe adjacent cells'
+            ],
+            safeCells: [{x: 0, y: 0}],
+            riskAssessment: {'(0,0)': 0.0}
         });
+
+        // Load initial knowledge base
+        getKnowledgeBase();
     });
 </script>
 </body>
