@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤰 AI Pregnancy Risk Detection System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row bg-primary text-white py-3 mb-4">
+        <div class="col-12">
+            <div class="container">
+                <h1 class="display-4 mb-0">
+                    <i class="fas fa-robot text-warning me-2"></i>
+                    AI Pregnancy Risk Detection
+                </h1>
+                <p class="lead mb-0">Advanced AI-powered health risk assessment for pregnancy care</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Service Status -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="alert" th:classappend="${serviceReady} ? 'alert-success' : 'alert-warning'">
+                    <i class="fas" th:classappend="${serviceReady} ? 'fa-check-circle' : 'fa-clock'"></i>
+                    <span th:if="${serviceReady}">AI Models Ready - System Online</span>
+                    <span th:unless="${serviceReady}">AI Models Initializing - Please Wait</span>
+                    <button class="btn btn-sm btn-outline-secondary ms-2" onclick="checkServiceStatus()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Input Form -->
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-gradient-primary text-white">
+                        <h3 class="card-title mb-0">
+                            <i class="fas fa-user-md me-2"></i>
+                            Health Data Input
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="healthForm" th:action="@{/predict}" method="post" th:object="${healthData}">
+
+                            <!-- Basic Information -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h5 class="text-primary border-bottom pb-2">
+                                        <i class="fas fa-info-circle me-2"></i>Basic Information
+                                    </h5>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="age" class="form-label">Age (years)</label>
+                                    <input type="number" class="form-control" id="age" th:field="*{age}"
+                                           min="15" max="50" step="1" placeholder="Enter age">
+                                    <div class="form-text">Age range: 15-50 years</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="bmi" class="form-label">BMI (Body Mass Index)</label>
+                                    <input type="number" class="form-control" id="bmi" th:field="*{bmi}"
+                                           min="10" max="50" step="0.1" placeholder="Enter BMI">
+                                    <div class="form-text">Normal range: 18.5-24.9</div>
+                                </div>
+                            </div>
+
+                            <!-- Vital Signs -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h5 class="text-primary border-bottom pb-2">
+                                        <i class="fas fa-heartbeat me-2"></i>Vital Signs
+                                    </h5>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="systolicBP" class="form-label">Systolic BP (mmHg)</label>
+                                    <input type="number" class="form-control" id="systolicBP" th:field="*{systolicBP}"
+                                           min="70" max="200" step="1" placeholder="120">
+                                    <div class="form-text">Normal: &lt;120</div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="diastolicBP" class="form-label">Diastolic BP (mmHg)</label>
+                                    <input type="number" class="form-control" id="diastolicBP" th:field="*{diastolicBP}"
+                                           min="40" max="120" step="1" placeholder="80">
+                                    <div class="form-text">Normal: &lt;80</div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="heartRate" class="form-label">Heart Rate (bpm)</label>
+                                    <input type="number" class="form-control" id="heartRate" th:field="*{heartRate}"
+                                           min="40" max="150" step="1" placeholder="72">
+                                    <div class="form-text">Normal: 60-100</div>
+                                </div>
+                            </div>
+
+                            <!-- Laboratory Values -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h5 class="text-primary border-bottom pb-2">
+                                        <i class="fas fa-flask me-2"></i>Laboratory Values
+                                    </h5>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="bloodSugar" class="form-label">Blood Sugar (mmol/L)</label>
+                                    <input type="number" class="form-control" id="bloodSugar" th:field="*{bloodSugar}"
+                                           min="2" max="25" step="0.1" placeholder="5.5">
+                                    <div class="form-text">Normal fasting: 3.9-5.5</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="bodyTemp" class="form-label">Body Temperature (°F)</label>
+                                    <input type="number" class="form-control" id="bodyTemp" th:field="*{bodyTemp}"
+                                           min="95" max="105" step="0.1" placeholder="98.6">
+                                    <div class="form-text">Normal: 97.0-99.5</div>
+                                </div>
+                            </div>
+
+                            <!-- Medical History -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h5 class="text-primary border-bottom pb-2">
+                                        <i class="fas fa-history me-2"></i>Medical History
+                                    </h5>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="previousComplications"
+                                               th:field="*{previousComplications}" value="1">
+                                        <label class="form-check-label" for="previousComplications">
+                                            Previous Pregnancy Complications
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="preexistingDiabetes"
+                                               th:field="*{preexistingDiabetes}" value="1">
+                                        <label class="form-check-label" for="preexistingDiabetes">
+                                            Pre-existing Diabetes
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="gestationalDiabetes"
+                                               th:field="*{gestationalDiabetes}" value="1">
+                                        <label class="form-check-label" for="gestationalDiabetes">
+                                            Gestational Diabetes
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="mentalHealth"
+                                               th:field="*{mentalHealth}" value="1">
+                                        <label class="form-check-label" for="mentalHealth">
+                                            Mental Health Concerns
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Algorithm Selection -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h5 class="text-primary border-bottom pb-2">
+                                        <i class="fas fa-cogs me-2"></i>AI Algorithm Selection
+                                    </h5>
+                                </div>
+                                <div class="col-12">
+                                    <div class="btn-group" role="group" aria-label="Algorithm selection">
+                                        <input type="radio" class="btn-check" name="algorithm" id="ensemble" value="ensemble" checked>
+                                        <label class="btn btn-outline-primary" for="ensemble">
+                                            <i class="fas fa-layer-group me-1"></i>Ensemble (Recommended)
+                                        </label>
+
+                                        <input type="radio" class="btn-check" name="algorithm" id="random_forest" value="random_forest">
+                                        <label class="btn btn-outline-primary" for="random_forest">
+                                            <i class="fas fa-tree me-1"></i>Random Forest
+                                        </label>
+
+                                        <input type="radio" class="btn-check" name="algorithm" id="neural_network" value="neural_network">
+                                        <label class="btn btn-outline-primary" for="neural_network">
+                                            <i class="fas fa-brain me-1"></i>Neural Network
+                                        </label>
+
+                                        <input type="radio" class="btn-check" name="algorithm" id="svm" value="svm">
+                                        <label class="btn btn-outline-primary" for="svm">
+                                            <i class="fas fa-chart-line me-1"></i>SVM
+                                        </label>
+                                    </div>
+                                    <div class="form-text mt-2">
+                                        Ensemble combines multiple algorithms for best accuracy
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-success btn-lg w-100" id="predictBtn">
+                                        <i class="fas fa-magic me-2"></i>
+                                        Analyze Risk with AI
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Information Panel -->
+            <div class="col-lg-4">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-info-circle me-2"></i>
+                            System Information
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="systemInfo">
+                            <div class="d-flex justify-content-center">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Important Notes
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Fill in as many fields as possible for accurate results
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                AI uses multiple specialized models automatically
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Results are for informational purposes only
+                            </li>
+                            <li class="mb-0">
+                                <i class="fas fa-exclamation-circle text-warning me-2"></i>
+                                Always consult healthcare professionals
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-chart-bar me-2"></i>
+                            Quick Stats
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="quickStats">
+                            <div class="text-center">
+                                <div class="spinner-border spinner-border-sm text-secondary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-dark text-white text-center py-3 mt-5">
+    <div class="container">
+        <p class="mb-0">
+            <i class="fas fa-robot text-warning me-2"></i>
+            AI Pregnancy Risk Detection System v1.0 |
+            <a href="/api/docs" class="text-warning">API Documentation</a>
+        </p>
+    </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/js/app.js"></script>
+</body>
+</html>
